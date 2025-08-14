@@ -8,8 +8,24 @@
     loadBtn: byId('loadBtn'), empty: byId('empty'), helpPanel: byId('helpPanel')
   };
   const appRoot = document.querySelector('.app');
-  const fabShow = document.getElementById('fabShow');
-  const toggleBtn = document.getElementById('toggleSidebar');
+  let fabShow = null; let toggleBtn = null;
+  function bindSidebarUI(){
+    fabShow = document.getElementById('fabShow');
+    toggleBtn = document.getElementById('toggleSidebar');
+    if (toggleBtn) toggleBtn.addEventListener('click', () => setCollapsed(!isCollapsed()));
+    if (fabShow) fabShow.addEventListener('click', () => setCollapsed(false));
+    // Keyboard shortcut only when viewer is hidden
+    window.addEventListener('keydown', (e) => {
+      if (e.key && e.key.toLowerCase() === 'h' && !document.getElementById('viewer').classList.contains('show')) {
+        setCollapsed(!isCollapsed());
+      }
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindSidebarUI);
+  } else {
+    bindSidebarUI();
+  }
 
   function isCollapsed() {
     return appRoot.classList.contains('collapsed');
@@ -197,13 +213,6 @@
   }, {passive:true});
 
 
-  toggleBtn.addEventListener('click', () => setCollapsed(!isCollapsed()));
-  fabShow.addEventListener('click', () => setCollapsed(false));
-  window.addEventListener('keydown', (e) => {
-    if (e.key.toLowerCase() === 'h' && !viewer.classList.contains('show')) {
-      setCollapsed(!isCollapsed());
-    }
-  });
   el.search.addEventListener('input', filterMaps);
   el.loadBtn.addEventListener('click', loadMaps);
   el.branch.addEventListener('change', loadMaps);

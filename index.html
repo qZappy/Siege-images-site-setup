@@ -71,12 +71,12 @@
     <button class="close" id="closeBtn" aria-label="Close">✕</button>
   </div>
 
+<div class="fab"><button id="fabShow">☰ Maps</button></div>
   <script src="assets/app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
     }
   </script>
-<div class="fab"><button id="fabShow">☰ Maps</button></div>
 </body>
 </html>
