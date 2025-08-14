@@ -5,11 +5,27 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Siege Site Setups</title>
   <meta name="description" content="Browse Rainbow Six: Siege site-setup images by map. Works on mobile via GitHub Pages." />
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json?v=3">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="theme-color" content="#0b0d10">
-  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/styles.v3.css">
+  <script>
+    // Minimal toggle API available before body renders
+    window.__sidebarPrefKey = 'sidebarCollapsed';
+    window.toggleSidebar = function(force){ 
+      var app = document.querySelector('.app'); 
+      if(!app) return;
+      var on = typeof force === 'boolean' ? !!force : !app.classList.contains('collapsed');
+      app.classList.toggle('collapsed', on);
+      try{ localStorage.setItem(window.__sidebarPrefKey, on ? '1' : '0'); }catch(e){}
+    };
+    window.restoreSidebarPref = function(){
+      try{ var on = localStorage.getItem(window.__sidebarPrefKey) === '1'; }catch(e){ on = false; }
+      var app = document.querySelector('.app'); if(app) app.classList.toggle('collapsed', on);
+    };
+    document.addEventListener('DOMContentLoaded', window.restoreSidebarPref);
+  </script>
 </head>
 <body>
   <div class="app">
@@ -44,7 +60,9 @@
       <div class="topbar">
         <h2 id="mapTitle" style="margin:0;font-size:18px"></h2>
         <span class="chip" id="countChip"></span>
-        <button id="toggleSidebar" class="toggleSidebar" title="Hide/show maps">☰ Maps</button>
+        <button id="toggleSidebar" class="toggleSidebar" title="Hide/show maps" onclick="toggleSidebar()">
+          ☰ Maps
+        </button>
       </div>
       <div class="grid" id="grid"></div>
       <div class="empty" id="empty" style="display:none">No images found. Ensure <code>/images/&lt;MapName&gt;/</code> exists with image files.</div>
@@ -54,7 +72,7 @@
         <ol>
           <li>Create a public repo. Folder structure: <code>/images/&lt;MapName&gt;/your_image_files.jpg</code>.</li>
           <li>Enable GitHub Pages: Settings → Pages → Deploy from branch (main) → root.</li>
-          <li>Upload this <code>index.html</code>, <code>assets/</code>, <code>icons/</code>, <code>manifest.json</code>, <code>sw.js</code>.</li>
+          <li>Upload this app: <code>index.html</code>, <code>assets/</code>, <code>icons/</code>, <code>manifest.json</code>, <code>sw.js</code>, <code>404.html</code>.</li>
           <li>Open the Pages site on your phone. If auto-detect fails, fill owner/repo inputs or use <code>?owner=&amp;repo=&amp;branch=</code>.</li>
         </ol>
         <p>Loads images via public GitHub API (60 req/hr per IP unauthenticated). Types: jpg, jpeg, png, webp, gif.</p>
@@ -71,11 +89,14 @@
     <button class="close" id="closeBtn" aria-label="Close">✕</button>
   </div>
 
-<div class="fab"><button id="fabShow">☰ Maps</button></div>
-  <script src="assets/app.js"></script>
+  <!-- Floating button always present; uses inline onclick so timing cannot break -->
+  <div class="fab"><button id="fabShow" onclick="toggleSidebar(false)">☰ Maps</button></div>
+
+  <script src="assets/app.v3.js"></script>
   <script>
+    // Register SW with relative path (correct for project pages)
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=3').catch(()=>{}));
     }
   </script>
 </body>

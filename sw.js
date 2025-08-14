@@ -1,10 +1,10 @@
 
-const CACHE = 'siege-viewer-v1';
+const CACHE = 'siege-viewer-v3';
 const CORE = [
   './',
   './index.html',
-  './assets/styles.css',
-  './assets/app.js',
+  './assets/styles.v3.css',
+  './assets/app.v3.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
@@ -20,7 +20,6 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
-  // Don't cache GitHub API or raw image URLs—network first
   if (url.hostname.includes('api.github.com') || url.pathname.includes('/contents/')) {
     return;
   }
