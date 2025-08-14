@@ -7,6 +7,19 @@
     search: byId('search'), branch: byId('branch'), owner: byId('owner'), repo: byId('repo'),
     loadBtn: byId('loadBtn'), empty: byId('empty'), helpPanel: byId('helpPanel')
   };
+  const appRoot = document.querySelector('.app');
+  const fabShow = document.getElementById('fabShow');
+  const toggleBtn = document.getElementById('toggleSidebar');
+
+  function isCollapsed() {
+    return appRoot.classList.contains('collapsed');
+  }
+  function setCollapsed(on, persist = true) {
+    appRoot.classList.toggle('collapsed', !!on);
+    if (persist) localStorage.setItem('sidebarCollapsed', on ? '1' : '0');
+  }
+  try { setCollapsed(localStorage.getItem('sidebarCollapsed') === '1', false); } catch {}
+
 
   function detectRepository(){
     const u = new URL(location.href);
@@ -129,7 +142,14 @@
   const nextBtn = document.getElementById('nextBtn');
   const closeBtn = document.getElementById('closeBtn');
 
+  let wasCollapsedBeforeViewer = null;
   function openViewer(src){
+    const idx = state.flatImages.findIndex(x=>x.src===src);
+    state.flatIndex = idx>=0 ? idx : 0;
+    setViewerImage();
+    wasCollapsedBeforeViewer = isCollapsed();
+    setCollapsed(true, false);
+
     const idx = state.flatImages.findIndex(x=>x.src===src);
     state.flatIndex = idx>=0 ? idx : 0;
     setViewerImage();
@@ -147,8 +167,22 @@
 
   prevBtn.addEventListener('click', ()=>nav(-1));
   nextBtn.addEventListener('click', ()=>nav(1));
-  closeBtn.addEventListener('click', ()=> viewer.classList.remove('show'));
-  viewer.addEventListener('click', (e)=>{ if(e.target===viewer) viewer.classList.remove('show'); });
+  closeBtn.addEventListener('click', ()=>{
+    viewer.classList.remove('show');
+    if (wasCollapsedBeforeViewer !== null) {
+      setCollapsed(wasCollapsedBeforeViewer, false);
+      wasCollapsedBeforeViewer = null;
+    }
+  });
+  viewer.addEventListener('click', (e)=>{
+    if(e.target===viewer){
+      viewer.classList.remove('show');
+      if (wasCollapsedBeforeViewer !== null) {
+        setCollapsed(wasCollapsedBeforeViewer, false);
+        wasCollapsedBeforeViewer = null;
+      }
+    }
+  });
   window.addEventListener('keydown', (e)=>{
     if(!viewer.classList.contains('show')) return;
     if(e.key==='Escape') viewer.classList.remove('show');
@@ -162,6 +196,14 @@
     if(Math.abs(dx)>40) nav(dx<0?1:-1); touchX=null;
   }, {passive:true});
 
+
+  toggleBtn.addEventListener('click', () => setCollapsed(!isCollapsed()));
+  fabShow.addEventListener('click', () => setCollapsed(false));
+  window.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'h' && !viewer.classList.contains('show')) {
+      setCollapsed(!isCollapsed());
+    }
+  });
   el.search.addEventListener('input', filterMaps);
   el.loadBtn.addEventListener('click', loadMaps);
   el.branch.addEventListener('change', loadMaps);

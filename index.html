@@ -44,6 +44,7 @@
       <div class="topbar">
         <h2 id="mapTitle" style="margin:0;font-size:18px"></h2>
         <span class="chip" id="countChip"></span>
+        <button id="toggleSidebar" class="toggleSidebar" title="Hide/show maps">☰ Maps</button>
       </div>
       <div class="grid" id="grid"></div>
       <div class="empty" id="empty" style="display:none">No images found. Ensure <code>/images/&lt;MapName&gt;/</code> exists with image files.</div>
@@ -76,5 +77,6 @@
       window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
     }
   </script>
+<div class="fab"><button id="fabShow">☰ Maps</button></div>
 </body>
 </html>

@@ -42,3 +42,39 @@ input:focus,select:focus,button:focus{outline:2px solid var(--accent)}
 .empty{color:var(--muted);text-align:center;padding:40px 0}
 a.help{color:var(--accent);text-decoration:none}
 .footer{margin-top:10px;color:var(--muted);font-size:12px}
+
+
+/* Sidebar collapse */
+.app.collapsed { grid-template-columns: 1fr; }
+.sidebar { transition: transform .25s ease; }
+.app.collapsed .sidebar {
+  transform: translateX(-110%);
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: 280px;
+  z-index: 6;
+}
+
+/* Floating Maps button shown when collapsed */
+.fab { position: fixed; left: 16px; bottom: 16px; z-index: 7; display: none; }
+.app.collapsed .fab { display: block; }
+.fab button {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.2);
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* Topbar toggle button */
+.topbar .toggleSidebar {
+  margin-left: auto;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.2);
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
