@@ -1,29 +1,41 @@
 
-const CACHE = 'siege-viewer-v3';
-const CORE = [
+// v4 service worker: network-first for app shell so updates reach phones
+const CACHE = 'siege-viewer-v4';
+const SHELL = [
   './',
   './index.html',
-  './assets/styles.v3.css',
-  './assets/app.v3.js',
+  './assets/styles.v4.css',
+  './assets/app.v4.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)));
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)));
   self.skipWaiting();
 });
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+self.addEventListener('activate', event => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))));
   self.clients.claim();
 });
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
-  if (url.hostname.includes('api.github.com') || url.pathname.includes('/contents/')) {
+
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  // Always network-first for HTML/CSS/JS so phones get updates
+  const isAppShell = url.pathname.endsWith('/') || url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
+  if (isAppShell) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(event.request, copy));
+        return res;
+      }).catch(() => caches.match(event.request))
+    );
     return;
   }
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+  // For everything else (e.g., icons), cache-first
+  event.respondWith(
+    caches.match(event.request).then(res => res || fetch(event.request))
   );
 });
