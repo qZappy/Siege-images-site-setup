@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Siege Site Setups</title>
+  <meta name="description" content="Browse Rainbow Six: Siege site-setup images by map. Works on mobile via GitHub Pages." />
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="theme-color" content="#0b0d10">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar card">
+      <div class="brand">
+        <div class="logo"></div>
+        <h1>Siege Site Setups</h1>
+      </div>
+      <div class="hint">Host on GitHub Pages. Put images in <code>/images/&lt;MapName&gt;/</code>.</div>
+
+      <div class="toolbar">
+        <input id="search" class="grow" placeholder="Search maps…" aria-label="Search maps" />
+        <select id="branch">
+          <option value="main">main</option>
+          <option value="master">master</option>
+        </select>
+      </div>
+
+      <div class="row" style="margin-bottom:8px">
+        <input id="owner" placeholder="owner (auto)" title="GitHub owner/org" />
+        <input id="repo" placeholder="repo (auto)" title="GitHub repo" />
+      </div>
+
+      <button id="loadBtn" title="Reload from GitHub">Reload</button>
+
+      <div class="maps-list" id="maps"></div>
+
+      <div class="footer">Tip: add <code>?owner=&amp;repo=&amp;branch=</code> to URL. <a class="help" href="#help">Help</a></div>
+    </aside>
+
+    <main class="content card">
+      <div class="topbar">
+        <h2 id="mapTitle" style="margin:0;font-size:18px"></h2>
+        <span class="chip" id="countChip"></span>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" style="display:none">No images found. Ensure <code>/images/&lt;MapName&gt;/</code> exists with image files.</div>
+
+      <section id="helpPanel" style="display:none;padding:10px 6px 4px 6px">
+        <h3 style="margin:4px 0 8px 0">How to use</h3>
+        <ol>
+          <li>Create a public repo. Folder structure: <code>/images/&lt;MapName&gt;/your_image_files.jpg</code>.</li>
+          <li>Enable GitHub Pages: Settings → Pages → Deploy from branch (main) → root.</li>
+          <li>Upload this <code>index.html</code>, <code>assets/</code>, <code>icons/</code>, <code>manifest.json</code>, <code>sw.js</code>.</li>
+          <li>Open the Pages site on your phone. If auto-detect fails, fill owner/repo inputs or use <code>?owner=&amp;repo=&amp;branch=</code>.</li>
+        </ol>
+        <p>Loads images via public GitHub API (60 req/hr per IP unauthenticated). Types: jpg, jpeg, png, webp, gif.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="viewer" id="viewer" aria-modal="true" role="dialog">
+    <img id="fullImg" alt="Image viewer" />
+    <div class="ui">
+      <button id="prevBtn" aria-label="Previous">⟵</button>
+      <button id="nextBtn" aria-label="Next">⟶</button>
+    </div>
+    <button class="close" id="closeBtn" aria-label="Close">✕</button>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+    }
+  </script>
+</body>
+</html>
