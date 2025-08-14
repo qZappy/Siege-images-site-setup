@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Siege Site Setups</title>
   <meta name="description" content="Browse Rainbow Six: Siege site-setup images by map. Works on mobile via GitHub Pages." />
-  <link rel="manifest" href="manifest.json?v=4">
+  <link rel="manifest" href="manifest.json?v=5">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="theme-color" content="#0b0d10">
-  <link rel="stylesheet" href="assets/styles.v4.css?v=4">
+  <link rel="stylesheet" href="assets/styles.v5.css?v=5">
   <script>
-    // Minimal toggle API (works even if app.js hasn't loaded yet)
+    // Sidebar toggle available immediately
     window.__sidebarPrefKey = 'sidebarCollapsed';
-    window.toggleSidebar = function(force){ 
-      var app = document.querySelector('.app'); 
+    window.toggleSidebar = function(force){
+      var app = document.querySelector('.app');
       if(!app) return;
       var on = typeof force === 'boolean' ? !!force : !app.classList.contains('collapsed');
       app.classList.toggle('collapsed', on);
@@ -26,10 +26,7 @@
     };
     document.addEventListener('DOMContentLoaded', window.restoreSidebarPref);
   </script>
-  <style>
-    /* iOS fullscreen safe area */
-    body { padding-bottom: env(safe-area-inset-bottom); }
-  </style>
+  <style>body { padding-bottom: env(safe-area-inset-bottom); }</style>
 </head>
 <body>
   <div class="app">
@@ -38,35 +35,21 @@
         <div class="logo"></div>
         <h1>Siege Site Setups</h1>
       </div>
-      <div class="hint">Put images in <code>/images/&lt;MapName&gt;/</code>. Tap ☰ to hide sidebar.</div>
+      <div class="hint">No API needed. Uses <code>/images/manifest.json</code>. Edit via <a href="tools/manifest_helper.html">Manifest Helper</a>.</div>
 
       <div class="toolbar">
         <input id="search" class="grow" placeholder="Search maps…" aria-label="Search maps" />
-        <select id="branch">
-          <option value="main">main</option>
-          <option value="master">master</option>
-        </select>
       </div>
 
-      <div class="row" style="margin-bottom:8px">
-        <input id="owner" placeholder="owner (auto)" title="GitHub owner/org" />
-        <input id="repo" placeholder="repo (auto)" title="GitHub repo" />
-      </div>
-
-      <button id="loadBtn" title="Reload from GitHub">Reload</button>
-
+      <button id="loadBtn" title="Reload">Reload</button>
       <div class="maps-list" id="maps"></div>
-
-      <div class="footer">Trouble on phone? Open with <code>?v=4&nosw=1</code> once.</div>
     </aside>
 
     <main class="content card">
       <div class="topbar">
         <h2 id="mapTitle" style="margin:0;font-size:18px"></h2>
         <span class="chip" id="countChip"></span>
-        <button id="toggleSidebar" class="toggleSidebar" title="Hide/show maps" onclick="toggleSidebar()">
-          ☰ Maps
-        </button>
+        <button id="toggleSidebar" class="toggleSidebar" title="Hide/show maps" onclick="toggleSidebar()">☰ Maps</button>
       </div>
       <div class="grid" id="grid"></div>
       <div class="empty" id="empty" style="display:none">No images found.</div>
@@ -84,16 +67,6 @@
 
   <div class="fab"><button id="fabShow" onclick="toggleSidebar(false)">☰ Maps</button></div>
 
-  <script src="assets/app.v4.js?v=4"></script>
-  <script>
-    // Only register SW if ?nosw=1 is NOT present
-    (function(){
-      var nosw = new URLSearchParams(location.search).get('nosw');
-      if (nosw === '1') return;
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=4').catch(()=>{}));
-      }
-    })();
-  </script>
+  <script src="assets/app.v5.js?v=5"></script>
 </body>
 </html>

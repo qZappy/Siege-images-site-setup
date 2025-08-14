@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Manifest Helper</title>
+<style>
+  body{font-family:system-ui;max-width:780px;margin:30px auto;padding:0 12px}
+  textarea{width:100%;min-height:180px}
+  pre{background:#0f1320;color:#e8eef5;padding:12px;border-radius:8px;overflow:auto}
+  .row{display:flex;gap:8px;align-items:center}
+  input[type=text]{flex:1;padding:8px}
+</style>
+<h1>Manifest Helper</h1>
+<p>Paste a list of files (e.g., from your OS file explorer) or type them manually. One line per file with <code>MapName/Filename.jpg</code>.</p>
+<p>Example:</p>
+<pre>Bank/Lobby_A.jpg
+Bank/Vault_B.png
+Clubhouse/Bar_site1.jpg
+Clubhouse/CCTV_site2.png</pre>
+
+<textarea id="input" placeholder="MapName/Filename.ext per line…"></textarea>
+<div class="row" style="margin-top:10px">
+  <input id="mapFilter" type="text" placeholder="Only include maps that contain…" />
+  <button id="build">Build manifest</button>
+  <button id="download" disabled>Download manifest.json</button>
+</div>
+<h3>Preview</h3>
+<pre id="out">{}</pre>
+<script>
+const exts = ['.jpg','.jpeg','.png','.webp','.gif'];
+function build(){
+  const txt = document.getElementById('input').value.trim();
+  const filter = document.getElementById('mapFilter').value.trim().toLowerCase();
+  const maps = {};
+  for(const rawLine of txt.split(/\r?\n/)){
+    const line = rawLine.trim();
+    if(!line) continue;
+    const slash = line.indexOf('/');
+    if(slash<=0) continue;
+    const map = line.slice(0,slash).trim();
+    const file = line.slice(slash+1).trim();
+    const low = file.toLowerCase();
+    if(!exts.some(e=>low.endsWith(e))) continue;
+    if(filter && !map.toLowerCase().includes(filter)) continue;
+    (maps[map] ||= []).push(file);
+  }
+  // sort
+  const sorted = {};
+  Object.keys(maps).sort((a,b)=>a.localeCompare(b)).forEach(m=>{
+    sorted[m] = maps[m].sort((a,b)=>a.localeCompare(b));
+  });
+  const data = {maps: sorted};
+  const json = JSON.stringify(data, null, 2);
+  document.getElementById('out').textContent = json;
+  document.getElementById('download').disabled = Object.keys(sorted).length===0;
+  window.__manifestBlob = new Blob([json], {type:'application/json'});
+}
+document.getElementById('build').addEventListener('click', build);
+document.getElementById('download').addEventListener('click', ()=>{
+  if(!window.__manifestBlob) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(window.__manifestBlob);
+  a.download = 'manifest.json';
+  a.click();
+});
+</script>
